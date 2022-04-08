@@ -37,12 +37,14 @@ public class CustomExceptionMiddleware
             {
                 await _next(context);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                _logger.LogError(e, e.ToString());
+                _logger.LogError(ex, ex.ToString());
 
                 var status = "500000";
                 var result = string.Empty;
+
+                var e = GetInnerException(ex);
 
                 switch (e)
                 {
@@ -119,12 +121,24 @@ public class CustomExceptionMiddleware
             return await new StreamReader(stream).ReadToEndAsync();
         }
 
-        private int GetHttpStatus(string? code)
+        private static int GetHttpStatus(string? code)
         {
             if (string.IsNullOrWhiteSpace(code) || code.Length != 6) return 400;
 
             if (!int.TryParse(code, out var httpStatus)) httpStatus = 400;
 
             return httpStatus / 1000;
+        }
+
+        private static Exception GetInnerException(Exception e)
+        {
+            var ex = e;
+
+            while (ex.InnerException != null)
+            {
+                ex = ex.InnerException;
+            }
+
+            return ex;
         }
     }
