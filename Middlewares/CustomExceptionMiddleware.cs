@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using FluentValidation;
 using Netcorext.Contracts;
 
-namespace Microsoft.Extensions.DependencyInjection.Middlewares;
+namespace Netcorext.Extensions.AspNetCore.Middlewares;
 
 public class CustomExceptionMiddleware
     {
