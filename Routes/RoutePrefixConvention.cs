@@ -9,7 +9,7 @@ public class RoutePrefixConvention : IApplicationModelConvention
 
     public RoutePrefixConvention(string routePrefix = "api/v{version:apiVersion}")
     {
-        _routePrefix = routePrefix;
+        _routePrefix = routePrefix.TrimStart('/');
     }
 
     public void Apply(ApplicationModel application)
