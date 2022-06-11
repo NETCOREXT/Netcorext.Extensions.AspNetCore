@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Netcorext.Extensions.AspNetCore.ModelBinding;
 
-public class FromFormOrBodyBinderProvider : IModelBinderProvider
+public class ArrayBinderProvider : IModelBinderProvider
 {
     private readonly IEnumerable<IModelBinderProvider> _modelBinderProviders;
 
-    public FromFormOrBodyBinderProvider(IEnumerable<IModelBinderProvider> modelBinderProviders)
+    public ArrayBinderProvider(IEnumerable<IModelBinderProvider> modelBinderProviders)
     {
         _modelBinderProviders = modelBinderProviders;
     }
@@ -14,13 +14,13 @@ public class FromFormOrBodyBinderProvider : IModelBinderProvider
     public IModelBinder? GetBinder(ModelBinderProviderContext context)
     {
         if (context.BindingInfo.BindingSource == null ||
-            (!context.BindingInfo.BindingSource.CanAcceptDataFrom(BindingSource.Body)
-          && !context.BindingInfo.BindingSource.CanAcceptDataFrom(BindingSource.Form))
+            (!context.BindingInfo.BindingSource.CanAcceptDataFrom(BindingSource.Path)
+          && !context.BindingInfo.BindingSource.CanAcceptDataFrom(BindingSource.Query))
            ) return null;
 
         var binders = _modelBinderProviders.Select(t => t.GetBinder(context))
                                            .Where(t => t != null);
 
-        return new FromFormOrBodyBinder(binders!);
+        return new ArrayBinder(binders!);
     }
 }

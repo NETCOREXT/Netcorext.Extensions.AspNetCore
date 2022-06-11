@@ -22,9 +22,21 @@ public static class MvcOptionsExtensions
                             options.ModelBinderProviders.OfType<ComplexObjectModelBinderProvider>().Single(),
                             options.ModelBinderProviders.OfType<SimpleTypeModelBinderProvider>().Single()
                         };
-        
+
         options.ModelBinderProviders.Insert(0, new FromFormOrBodyBinderProvider(providers));
-        
+
+        return options;
+    }
+
+    public static MvcOptions AddArrayBinderProvider(this MvcOptions options)
+    {
+        var providers = new IModelBinderProvider[]
+                        {
+                            options.ModelBinderProviders.OfType<ArrayModelBinderProvider>().Single()
+                        };
+
+        options.ModelBinderProviders.Insert(0, new ArrayBinderProvider(providers));
+
         return options;
     }
 }

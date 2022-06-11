@@ -16,9 +16,9 @@ public class FromFormOrBodyBinder : IModelBinder
         foreach (var modelBinder in _modelBinders)
         {
             bindingContext.ModelState.Clear();
-            
+
             await modelBinder.BindModelAsync(bindingContext);
-            
+
             if (bindingContext.Result.IsModelSet) return;
         }
     }
