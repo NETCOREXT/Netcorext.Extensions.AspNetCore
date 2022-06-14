@@ -13,14 +13,13 @@ public class ArrayBinderProvider : IModelBinderProvider
 
     public IModelBinder? GetBinder(ModelBinderProviderContext context)
     {
-        if (context.BindingInfo.BindingSource == null ||
-            (!context.BindingInfo.BindingSource.CanAcceptDataFrom(BindingSource.Path)
-          && !context.BindingInfo.BindingSource.CanAcceptDataFrom(BindingSource.Query))
-           ) return null;
+        if (!context.Metadata.IsEnumerableType || context.Metadata.BindingSource == null || (!context.Metadata.BindingSource.CanAcceptDataFrom(BindingSource.Path) && !context.Metadata.BindingSource.CanAcceptDataFrom(BindingSource.Query)))
+            return null;
 
         var binders = _modelBinderProviders.Select(t => t.GetBinder(context))
                                            .Where(t => t != null);
 
         return new ArrayBinder(binders!);
+
     }
 }
