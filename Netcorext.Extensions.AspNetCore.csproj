@@ -15,10 +15,10 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeProjectReferences</TargetsForTfmSpecificBuildOutput>
-    <Authors>Aren Chen</Authors>
+    <Authors>NETCOREXT</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/arenchen/Netcorext.Extensions.AspNetCore</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/arenchen/Netcorext.Extensions.AspNetCore.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/NETCOREXT/Netcorext.Extensions.AspNetCore</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/NETCOREXT/Netcorext.Extensions.AspNetCore.git</RepositoryUrl>
     <Description>Asp.Net Core Extensions</Description>
   </PropertyGroup>
 
@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="10.4" />
     <PackageReference Include="Netcorext.Contracts.Abstractions" Version="1.0.1-dev.*" />
   </ItemGroup>
 

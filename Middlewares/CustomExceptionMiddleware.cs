@@ -49,19 +49,7 @@ public class CustomExceptionMiddleware
             switch (e)
             {
                 case ValidationException validationEx:
-                    var failure = validationEx.Errors.First();
-
-                    var code = typeof(Result).GetFields(BindingFlags.Public | BindingFlags.Static)
-                                             .Select(t => t.GetValue(null)?.ToString())
-                                             .FirstOrDefault(t => t == failure.ErrorCode);
-
-                    status = code ?? Result.InvalidInput;
-
-                    result = await ToJsonAsync(new
-                                               {
-                                                   Code = status,
-                                                   Message = failure.ErrorMessage
-                                               });
+                    result = await ToJsonAsync(Result.InvalidInput.Clone(validationEx.Errors));
 
                     break;
                 case ArgumentException argumentEx:
