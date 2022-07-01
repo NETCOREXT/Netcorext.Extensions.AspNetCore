@@ -41,7 +41,7 @@ public class CustomExceptionMiddleware
         {
             _logger.LogError(ex, ex.ToString());
 
-            var status = "500000";
+            var status = Result.InternalServerError;
             var result = string.Empty;
 
             var e = GetInnerException(ex);
@@ -49,6 +49,8 @@ public class CustomExceptionMiddleware
             switch (e)
             {
                 case ValidationException validationEx:
+                    status = Result.InvalidInput;
+                    
                     result = await ToJsonAsync(Result.InvalidInput.Clone(validationEx.Errors));
 
                     break;
