@@ -20,6 +20,5 @@ public class ArrayBinderProvider : IModelBinderProvider
                                            .Where(t => t != null);
 
         return new ArrayBinder(binders!);
-
     }
 }

@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentValidation;
@@ -39,8 +38,6 @@ public class CustomExceptionMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.ToString());
-
             var status = Result.InternalServerError;
             var result = string.Empty;
 
@@ -49,12 +46,16 @@ public class CustomExceptionMiddleware
             switch (e)
             {
                 case ValidationException validationEx:
+                    _logger.LogWarning(ex, "{Message}", ex.ToString());
+
                     status = Result.InvalidInput;
-                    
+
                     result = await ToJsonAsync(Result.InvalidInput.Clone(validationEx.Errors));
 
                     break;
                 case ArgumentException argumentEx:
+                    _logger.LogWarning(ex, "{Message}", ex.ToString());
+
                     status = Result.InvalidInput;
 
                     result = await ToJsonAsync(new
@@ -65,6 +66,8 @@ public class CustomExceptionMiddleware
 
                     break;
                 case BadHttpRequestException badHttpRequestEx:
+                    _logger.LogWarning(ex, "{Message}", ex.ToString());
+
                     status = badHttpRequestEx.Message == "Request body too large." ? Result.PayloadTooLarge : Result.InvalidInput;
 
                     result = await ToJsonAsync(new
@@ -75,6 +78,8 @@ public class CustomExceptionMiddleware
 
                     break;
                 default:
+                    _logger.LogError(ex, "{Message}", ex.ToString());
+
                     status = Result.InternalServerError;
 
                     if (!_environment.IsProduction())
