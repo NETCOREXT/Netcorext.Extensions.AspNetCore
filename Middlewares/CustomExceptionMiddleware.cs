@@ -38,8 +38,8 @@ public class CustomExceptionMiddleware
         }
         catch (Exception ex)
         {
-            var status = Result.InternalServerError;
-            var result = string.Empty;
+            string status;
+            string result;
 
             var e = GetInnerException(ex);
 
