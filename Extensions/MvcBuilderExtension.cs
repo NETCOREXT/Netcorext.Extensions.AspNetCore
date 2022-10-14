@@ -1,5 +1,6 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Netcorext.Contracts;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ public static class MvcBuilderExtension
                                                                                                                           var result = Result.InvalidInput.Clone();
 
                                                                                                                           result.Errors = context.ModelState
+                                                                                                                                                 .Where(t => t.Value?.ValidationState == ModelValidationState.Invalid)
                                                                                                                                                  .Select(t => new ValidationFailure
                                                                                                                                                               {
                                                                                                                                                                   PropertyName = t.Key,
@@ -23,7 +25,6 @@ public static class MvcBuilderExtension
                                                                                                                                                                                   .Select(t2 => t2.ErrorMessage)
                                                                                                                                                                                   .Aggregate((c, n) => c + "\n" + n)
                                                                                                                                                               });
-
                                                                                                                           return new ObjectResult(result)
                                                                                                                                  {
                                                                                                                                      StatusCode = 400
