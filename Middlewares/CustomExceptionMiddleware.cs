@@ -46,7 +46,7 @@ public class CustomExceptionMiddleware
             switch (e)
             {
                 case ValidationException validationEx:
-                    _logger.LogWarning(ex, "{Message}", ex.ToString());
+                    _logger.LogWarning(e, "{Message}", e.Message);
 
                     status = Result.InvalidInput;
 
@@ -54,7 +54,7 @@ public class CustomExceptionMiddleware
 
                     break;
                 case ArgumentException argumentEx:
-                    _logger.LogWarning(ex, "{Message}", ex.ToString());
+                    _logger.LogWarning(e, "{Message}", e.Message);
 
                     status = Result.InvalidInput;
 
@@ -66,7 +66,7 @@ public class CustomExceptionMiddleware
 
                     break;
                 case BadHttpRequestException badHttpRequestEx:
-                    _logger.LogWarning(ex, "{Message}", ex.ToString());
+                    _logger.LogWarning(e, "{Message}", e.Message);
 
                     status = badHttpRequestEx.Message == "Request body too large." ? Result.PayloadTooLarge : Result.InvalidInput;
 
@@ -78,7 +78,7 @@ public class CustomExceptionMiddleware
 
                     break;
                 default:
-                    _logger.LogError(ex, "{Message}", ex.ToString());
+                    _logger.LogError(e, "{Message}", e.Message);
 
                     status = Result.InternalServerError;
 
