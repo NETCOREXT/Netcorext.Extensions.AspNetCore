@@ -5,7 +5,7 @@ using Netcorext.Extensions.AspNetCore.ModelBinding;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class MvcOptionsExtensions
+public static class MvcOptionsExtension
 {
     public static MvcOptions UseRoutePrefix(this MvcOptions options, string prefix = "api/v{version:apiVersion}")
     {
