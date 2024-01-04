@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http.Features;
+using Serilog.Context;
 
 namespace Netcorext.Extensions.AspNetCore.Handlers;
 
@@ -17,7 +17,7 @@ public class RequestIdHttpMessageHandler : DelegatingHandler
                            ? new[] { DEFAULT_HEADER_NAME }
                            : headerNames;
     }
- 
+
     protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         if (request == null)
@@ -27,7 +27,7 @@ public class RequestIdHttpMessageHandler : DelegatingHandler
             return base.Send(request, cancellationToken);
 
         SetRequestId(_httpContextAccessor.HttpContext, request, _headerName, _headerNames);
-        
+
         return base.Send(request, cancellationToken);
     }
 
@@ -38,13 +38,13 @@ public class RequestIdHttpMessageHandler : DelegatingHandler
 
         if (_httpContextAccessor.HttpContext == null)
             return await base.SendAsync(request, cancellationToken);
-        
+
         SetRequestId(_httpContextAccessor.HttpContext, request, _headerName, _headerNames);
 
         return await base.SendAsync(request, cancellationToken);
     }
 
-    private static void SetRequestId(HttpContext context, HttpRequestMessage request, string headerName, params string[] headerNames)
+    private void SetRequestId(HttpContext context, HttpRequestMessage request, string headerName, params string[] headerNames)
     {
         var requestId = string.Empty;
 
@@ -60,10 +60,12 @@ public class RequestIdHttpMessageHandler : DelegatingHandler
 
         if (string.IsNullOrWhiteSpace(requestId))
             requestId = context.TraceIdentifier;
-        
+
         if (request.Headers.Contains(headerName))
             request.Headers.Remove(headerName);
-        
+
         request.Headers.Add(headerName, requestId);
+
+        LogContext.PushProperty("XRequestId", requestId);
     }
 }

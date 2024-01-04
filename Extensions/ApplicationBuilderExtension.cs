@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Netcorext.Extensions.AspNetCore.Handlers;
+using Serilog.Context;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +15,7 @@ public static class ApplicationBuilderExtension
                                                                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                                                                     ReferenceHandler = ReferenceHandler.IgnoreCycles
                                                                 };
-    
+
     public static IApplicationBuilder UseRequestId(this IApplicationBuilder app, bool overwriteTraceIdentifier = false)
     {
         return UseRequestId(app, overwriteTraceIdentifier, RequestIdHttpMessageHandler.DEFAULT_HEADER_NAME, RequestIdHttpMessageHandler.DEFAULT_HEADER_NAME);
@@ -24,7 +25,7 @@ public static class ApplicationBuilderExtension
     {
         return UseRequestId(app, false, RequestIdHttpMessageHandler.DEFAULT_HEADER_NAME, headerNames);
     }
-    
+
     public static IApplicationBuilder UseRequestId(this IApplicationBuilder app, string headerName = RequestIdHttpMessageHandler.DEFAULT_HEADER_NAME, params string[] headerNames)
     {
         return UseRequestId(app, false, headerName, headerNames);
@@ -41,18 +42,22 @@ public static class ApplicationBuilderExtension
                                if (!context.Request.Headers.ContainsKey(name) || string.IsNullOrWhiteSpace(context.Request.Headers[name]))
                                    continue;
 
-                               requestId= context.Request.Headers[name];
+                               requestId = context.Request.Headers[name];
 
                                break;
                            }
 
+                           requestId ??= Guid.NewGuid().ToString();
+
                            if (overwriteTraceIdentifier)
                                context.TraceIdentifier = requestId;
-                           
+
                            context.Request.Headers[headerName] = requestId;
-                           
+
                            context.Response.Headers[headerName] = requestId;
-                           
+
+                           LogContext.PushProperty("XRequestId", requestId);
+
                            await func.Invoke();
                        });
     }
@@ -75,7 +80,7 @@ public static class ApplicationBuilderExtension
                                headers[header.Key] = header.Value;
                            }
 
-                           if (!string.IsNullOrWhiteSpace(context.Connection.RemoteIpAddress?.ToString())) 
+                           if (!string.IsNullOrWhiteSpace(context.Connection.RemoteIpAddress?.ToString()))
                                headers["X-Remote-Ip"] = context.Connection.RemoteIpAddress.ToString();
 
                            context.Response.ContentType = "application/json";

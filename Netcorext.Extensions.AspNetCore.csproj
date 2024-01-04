@@ -28,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog" Version="3.*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Netcorext.Contracts.Abstractions" Version="1.0.1-dev.*" />
   </ItemGroup>
 
