@@ -53,7 +53,6 @@ public static class ApplicationBuilderExtension
                                context.TraceIdentifier = requestId;
 
                            context.Request.Headers[headerName] = requestId;
-
                            context.Response.Headers[headerName] = requestId;
 
                            LogContext.PushProperty("XRequestId", requestId);
