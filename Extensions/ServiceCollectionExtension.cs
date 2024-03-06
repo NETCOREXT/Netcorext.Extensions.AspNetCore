@@ -6,11 +6,11 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddContextState(this IServiceCollection services)
+    public static IServiceCollection AddContextState(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Transient)
     {
         services.AddHttpContextAccessor();
 
-        services.TryAddScoped<IContextState, ContextState>();
+        services.TryAdd(new ServiceDescriptor(typeof(IContextState), typeof(ContextState), lifetime));
 
         return services;
     }

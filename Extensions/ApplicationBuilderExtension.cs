@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Netcorext.Extensions.AspNetCore.Handlers;
+using Netcorext.Extensions.AspNetCore.Helpers;
 using Serilog.Context;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -35,19 +36,7 @@ public static class ApplicationBuilderExtension
     {
         return app.Use(async (context, func) =>
                        {
-                           var requestId = context.TraceIdentifier;
-
-                           foreach (var name in headerNames)
-                           {
-                               if (!context.Request.Headers.ContainsKey(name) || string.IsNullOrWhiteSpace(context.Request.Headers[name]))
-                                   continue;
-
-                               requestId = context.Request.Headers[name];
-
-                               break;
-                           }
-
-                           requestId ??= Guid.NewGuid().ToString();
+                           var requestId = context.GetRequestId(headerNames);
 
                            if (overwriteTraceIdentifier)
                                context.TraceIdentifier = requestId;
