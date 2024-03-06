@@ -9,8 +9,8 @@ public sealed class ContextState : IContextState
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private string _requestId = Guid.NewGuid().ToString();
-    private ClaimsPrincipal _user = new();
-    private IDictionary<object, object?> _items = new Dictionary<object, object?>();
+    private readonly AsyncLocal<ContextStateUserHolder> _userHolder = new AsyncLocal<ContextStateUserHolder>();
+    private readonly AsyncLocal<ContextStateItemsHolder> _itemsHolder = new AsyncLocal<ContextStateItemsHolder>();
 
     public ContextState(IHttpContextAccessor httpContextAccessor)
     {
@@ -31,25 +31,43 @@ public sealed class ContextState : IContextState
 
     public ClaimsPrincipal? User
     {
-        get => _httpContextAccessor.HttpContext?.User ?? _user;
+        get => _httpContextAccessor.HttpContext?.User ?? _userHolder.Value?.User;
         set
         {
-            if (_httpContextAccessor.HttpContext == null)
-                _user = value ?? new ClaimsPrincipal();
-            else
+            var holder = _userHolder.Value;
+            if (holder != null)
+                holder.User = null;
+
+            if (value != null)
+                _userHolder.Value = new ContextStateUserHolder { User = value };
+
+            if (_httpContextAccessor.HttpContext != null)
                 _httpContextAccessor.HttpContext.User = value ?? new ClaimsPrincipal();
         }
     }
 
     public IDictionary<object, object?> Items
     {
-        get => _httpContextAccessor.HttpContext?.Items ?? _items;
+        get => _httpContextAccessor.HttpContext?.Items ?? _itemsHolder.Value?.Items ?? new Dictionary<object, object?>();
         set
         {
+            var holder = _itemsHolder.Value;
+            if (holder != null)
+                holder.Items = null;
+
+            _itemsHolder.Value = new ContextStateItemsHolder { Items = value };
+
             if (_httpContextAccessor.HttpContext != null)
                 _httpContextAccessor.HttpContext.Items = value;
-            else
-                _items = value;
         }
+    }
+
+    private class ContextStateUserHolder
+    {
+        public ClaimsPrincipal? User;
+    }
+    private class ContextStateItemsHolder
+    {
+        public IDictionary<object, object?>? Items;
     }
 }
