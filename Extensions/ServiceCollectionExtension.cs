@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddContextState(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Transient)
+    public static IServiceCollection AddContextState(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
     {
         services.AddHttpContextAccessor();
 
